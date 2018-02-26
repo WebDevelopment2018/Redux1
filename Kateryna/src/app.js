@@ -3,7 +3,7 @@ import React from "react"
 import expect from 'expect';
 import ReactDOM from 'react-dom';
 
-const deepFreeze = require('deep-freeze');
+//const deepFreeze = require('deep-freeze');
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -42,66 +42,51 @@ const todos = (state = [], action) => {
     }
 };
 
-const testAddTodo = () => {
-    const stateBefore = [];
-    const action = {
-        type: 'ADD_TODO',
+const visibilityFilter = (state = 'SHOW_ALL', action) => {
+    switch (action.type) {
+        case 'SET_VISIBILITY_FILTER':
+            return action.filter;
+        default:
+            return state;
+    }
+};
+
+const todoApp = (state = {}, action) => {
+    return {
+        todos: todos(
+            state.todos,
+            action
+        ),
+        visibilityFilter: visibilityFilter(
+            state.visibilityFilter,
+            action
+        )
+    };
+};
+
+const store = createStore(todoApp);
+console.log("Initial state");
+console.log(store.getState());
+console.log("--------------------");
+
+
+console.log("Dispathing");
+store.dispatch(
+    {
+        type: "ADD_TODO",
         id: 0,
         text: 'Learn Redux'
-    };
-    const stateAfter = [{
-        id: 0,
-        text: 'Learn Redux',
-        completed: false
-    }];
+    }
+);
+console.log(store.getState());
+console.log("--------------------");
 
-    deepFreeze(stateBefore);
-    deepFreeze(action);
-
-    expect(
-        todos(stateBefore, action)
-    ).toEqual(stateAfter);
-};
-
-const testToggleTodo = () => {
-    const stateBefore = [
-        {
-            id: 0,
-            text: 'Learn Redux',
-            completed: false
-        },
-        {
-            id: 1,
-            text: 'Go Shopping',
-            completed: false
-        }
-    ];
-    const action = {
-        type: 'TOGGLE_TODO',
-        id: 1
-    };
-
-    const stateAfter = [
-        {
-            id: 0,
-            text: 'Learn Redux',
-            completed: false
-        },
-        {
-            id: 1,
-            text: 'Go Shopping',
-            completed: true
-        }
-    ];
-
-    deepFreeze(stateBefore);
-    deepFreeze(action);
-
-    expect(
-        todos(stateBefore, action)
-    ).toEqual(stateAfter);
-};
-
-testAddTodo();
-testToggleTodo();
-console.log('All tests passed')
+console.log("Set visibility filter");
+store.dispatch(
+    {
+        type: "SET_VISIBILITY_FILTER",
+        filter: "SHOW_COMPLETED"
+    }
+);
+console.log(store.getState());
+console.log("--------------------");
