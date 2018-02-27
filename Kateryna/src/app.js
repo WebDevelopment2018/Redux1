@@ -1,112 +1,118 @@
-import {createStore} from 'redux';
-import React from "react"
-import expect from 'expect';
+import {createStore, combineReducers} from 'redux';
+import React, {Component} from "react"
 import ReactDOM from 'react-dom';
+import Footer from "./components/Footer";
+import AddTodo from "./components/AddTodo";
+import VisibleTodoList from "./components/VisibleTodoList";
+import { Provider } from 'react-redux';
 
-const deepFreeze = require('deep-freeze');
-
-const toggleTodo = (todo) => {
-    return Object.assign({}, todo, {
-        completed: !todo.completed
-    });
-};
-
-
-// const toggleTodo = (todo) => {
-//     return {
-//         ...todo,
-//         completed: !todo.completed
-//     };
-// };
-
-const testToggleTodo = () => {
-    const todoBefore = {
-        id: 0,
-        text: 'Learn Redux',
-        completed: false
-    };
-    const todoAfter = {
-        id: 0,
-        text: 'Learn Redux',
-        completed: true
-    };
-
-    deepFreeze(todoBefore);
-
-    expect(
-        toggleTodo(todoBefore)
-    ).toEqual(todoAfter);
-};
-
-testToggleTodo();
-console.log('All tests passed.');
-
-/*
-const addCounter = (list) => [...list, 0];
-// return list.concat([0]); // old way
-
-const removeCounter = (list, index) => [
-    ...list.slice(0, index),
-    ...list.slice(index + 1)
-];
-// Old way:
-//return list
-//  .slice(0, index)
-//  .concat(list.slice(index + 1));
-
-const incrementCounter = (list, index) => [
-    ...list.slice(0, index),
-    list[index] + 1,
-    ...list.slice(index + 1)
-];
-*/
-
-/*
-const counter = (state = 0, action) => {
+const todo = (state, action) => {
     switch (action.type) {
-        case 'INCREMENT':
-            return state + 1;
-        case 'DECREMENT':
-            return state - 1;
+        case 'ADD_TODO':
+            return {
+                id: action.id,
+                text: action.text,
+                completed: false
+            };
+        case 'TOGGLE_TODO':
+            if (state.id !== action.id) {
+                return state;
+            }
+
+            return {
+                ...state,
+                completed: !state.completed
+            };
+        default:
+            return state;
+    }
+}
+
+
+const todos = (state = [], action) => {
+    switch (action.type) {
+        case 'ADD_TODO':
+            return [
+                ...state,
+                todo(undefined, action)
+            ];
+        case 'TOGGLE_TODO':
+            return state.map(t => todo(t, action));
         default:
             return state;
     }
 };
 
+const visibilityFilter = (state = 'SHOW_ALL', action) => {
+    switch (action.type) {
+        case 'SET_VISIBILITY_FILTER':
+            return action.filter;
+        default:
+            return state;
+    }
+};
 
-const store = createStore(counter);
+const todoApp = combineReducers({
+    todos: todos,
+    visibilityFilter: visibilityFilter
+});
 
-const Counter = ({
-                     value,
-                     onIncrement,
-                     onDecrement
-                 }) => (
-    <div>
-        <h1>{value}</h1>
-        <button onClick={onIncrement}>+</button>
-        <button onClick={onDecrement}>-</button>
-    </div>
-);
+
+
+const TodoApp = () =>
+    (
+        <div>
+            <AddTodo/>
+            <VisibleTodoList/>
+            <Footer/>
+        </div>
+    );
+
+
+
 
 const render = () => {
     ReactDOM.render(
-        <Counter
-            value={store.getState()}
-            onIncrement={() =>
-                store.dispatch({
-                    type: 'INCREMENT'
-                })
-            }
-            onDecrement={() =>
-                store.dispatch({
-                    type: 'DECREMENT'
-                })
-            }
-        />,
+        <Provider store={createStore(todoApp)}>
+            <TodoApp />
+        </Provider>,
         document.getElementById('root')
-    );
-}
-
-store.subscribe(render);
+    )
+};
 render();
+
+/*
+import expect from 'expect';
+//const deepFreeze = require('deep-freeze');
+const todoApp = combineReducers({
+    todos: todos,
+    visibilityFilter: visibilityFilter
+});
+
+const store = createStore(todoApp);
+console.log("Initial state");
+console.log(store.getState());
+console.log("--------------------");
+
+
+console.log("Dispathing");
+store.dispatch(
+    {
+        type: "ADD_TODO",
+        id: 0,
+        text: 'Learn Redux'
+    }
+);
+console.log(store.getState());
+console.log("--------------------");
+
+console.log("Set visibility filter");
+store.dispatch(
+    {
+        type: "SET_VISIBILITY_FILTER",
+        filter: "SHOW_COMPLETED"
+    }
+);
+console.log(store.getState());
+console.log("--------------------");
 */
