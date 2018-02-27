@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Footer from "./components/Footer";
 import AddTodo from "./components/AddTodo";
 import VisibleTodoList from "./components/VisibleTodoList";
+import PropTypes from 'prop-types';
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -58,18 +59,35 @@ const todoApp = combineReducers({
 
 
 
-const TodoApp = ({ store }) =>
+const TodoApp = () =>
     (
         <div>
-            <AddTodo store={store} />
-            <VisibleTodoList store={store}/>
-            <Footer store={store}/>
+            <AddTodo/>
+            <VisibleTodoList/>
+            <Footer/>
         </div>
     );
 
+class Provider extends Component {
+    getChildContext() {
+        return {
+            store: this.props.store // This corresponds to the `store` passed in as a prop
+        };
+    }
+    render() {
+        return this.props.children;
+    }
+}
+
+Provider.childContextTypes = {
+    store: PropTypes.object
+};
+
 const render = () => {
     ReactDOM.render(
-        <TodoApp store={createStore(todoApp)}/>,
+        <Provider store={createStore(todoApp)}>
+            <TodoApp />
+        </Provider>,
         document.getElementById('root')
     )
 };
