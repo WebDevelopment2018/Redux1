@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Footer from "./components/Footer";
 import AddTodo from "./components/AddTodo";
 import VisibleTodoList from "./components/VisibleTodoList";
+import { Provider } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const todo = (state, action) => {
@@ -68,20 +69,6 @@ const TodoApp = () =>
         </div>
     );
 
-class Provider extends Component {
-    getChildContext() {
-        return {
-            store: this.props.store // This corresponds to the `store` passed in as a prop
-        };
-    }
-    render() {
-        return this.props.children;
-    }
-}
-
-Provider.childContextTypes = {
-    store: PropTypes.object
-};
 
 const render = () => {
     ReactDOM.render(
