@@ -1,7 +1,6 @@
 import React from "react";
 import FilterLink from "./FilterLink";
 
-
 const Footer = ({visibilityFilter,onFilterClick}) => (
     <p>
         <FilterLink

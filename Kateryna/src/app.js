@@ -1,9 +1,72 @@
 import {createStore, combineReducers} from 'redux';
 import React, {Component} from "react"
 import ReactDOM from 'react-dom';
-import Footer from "./components/Footer";
+// import Footer from "./components/Footer";
 import AddTodo from "./components/AddTodo";
-import Todo from "./components/Todo";
+import TodoList from "./components/TodoList";
+import Link from "./components/Link";
+
+const Footer = ({visibilityFilter,onFilterClick}) => (
+    <p>
+        <FilterLink
+            filter='SHOW_ALL'
+            currentFilter={visibilityFilter}
+            onClick={onFilterClick}
+        >
+            All
+        </FilterLink>
+        {', '}
+        <FilterLink
+            filter='SHOW_ACTIVE'
+            currentFilter={visibilityFilter}
+            onClick={onFilterClick}
+        >
+            Active
+        </FilterLink>
+        {', '}
+        <FilterLink
+            filter='SHOW_COMPLETED'
+            currentFilter={visibilityFilter}
+            onClick={onFilterClick}
+        >
+            Completed
+        </FilterLink>
+    </p>
+);
+
+class FilterLink extends Component {
+    componentDidMount() {
+        this.unsubscribe = store.subscribe(() =>
+            this.forceUpdate()
+        );
+    }
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    render () {
+        const props = this.props;
+        const state = store.getState();
+
+        return (
+            <Link
+                active={
+                    props.filter ===
+                    state.visibilityFilter
+                }
+                onClick={() =>
+                    store.dispatch({
+                        type: 'SET_VISIBILITY_FILTER',
+                        filter: props.filter
+                    })
+                }
+            >
+                {props.children}
+            </Link>
+        );
+    }
+}
+
 
 const getVisibleTodos = (todos,filter) => {
     switch (filter) {
@@ -20,20 +83,6 @@ const getVisibleTodos = (todos,filter) => {
             );
     }
 }
-
-
-const TodoList = ({todos, onTodoClick}) => (
-    <ul>
-        {todos.map(todo =>
-            <Todo
-                key={todo.id}
-                {...todo}
-                onClick={() => onTodoClick(todo.id)}
-            />
-        )}
-    </ul>
-)
-
 
 const todo = (state, action) => {
     switch (action.type) {
