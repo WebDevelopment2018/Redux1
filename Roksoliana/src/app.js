@@ -1,5 +1,5 @@
 import {createStore} from 'redux';
-import {combineReducers} from 'redux';
+//import {combineReducers} from 'redux';
 import React from "react";
 import expect from 'expect';
 
@@ -112,8 +112,23 @@ const visibilityFilter = (
     }
 };
 
+const combineReducers = (reducers) => {
+    return (state = {}, action) => {
+        return Object.keys(reducers).reduce(
+            (nextState, key) => {
+                nextState[key] = reducers[key](
+                state[key],
+                    action
+                );
+                return nextState;
+            },
+            {}
+        );
+    };
+};
+
 const todoApp = combineReducers({
-    todos: todos,
+    todos,
     visibilityFilter
 });
 
