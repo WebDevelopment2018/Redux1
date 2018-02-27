@@ -5,7 +5,6 @@ import Footer from "./components/Footer";
 import AddTodo from "./components/AddTodo";
 import VisibleTodoList from "./components/VisibleTodoList";
 import { Provider } from 'react-redux';
-import PropTypes from 'prop-types';
 
 const todo = (state, action) => {
     switch (action.type) {
@@ -68,6 +67,8 @@ const TodoApp = () =>
             <Footer/>
         </div>
     );
+
+
 
 
 const render = () => {
