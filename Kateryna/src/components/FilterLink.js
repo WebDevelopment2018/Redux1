@@ -9,14 +9,18 @@ const mapStateToLinkProps = (state,ownProps) => {
         state.visibilityFilter
     }
 };
-
+const setVisibilityFilter = (filter) => {
+    return {
+        type: 'SET_VISIBILITY_FILTER',
+        filter
+    };
+};
 const mapDispatchToLinkProps = (dispatch,ownProps) => {
     return {
         onClick: () => {
-            dispatch({
-                type: 'SET_VISIBILITY_FILTER',
-                filter: ownProps.filter
-            });
+            dispatch(
+                setVisibilityFilter(ownProps.filter)
+            );
         }
     };
 }
