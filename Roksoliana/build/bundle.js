@@ -1542,7 +1542,7 @@ const mapDispatchToProps = dispatch => {
 };
 const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(TodoList);
 
-const AddTodo = (props, { store }) => {
+let AddTodo = ({ dispatch }) => {
     let input;
     return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         'div',
@@ -1553,7 +1553,7 @@ const AddTodo = (props, { store }) => {
         __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
             'button',
             { onClick: () => {
-                    store.dispatch({
+                    dispatch({
                         type: 'ADD_TODO',
                         id: nextTodoId++,
                         text: input.value
@@ -1564,9 +1564,7 @@ const AddTodo = (props, { store }) => {
         )
     );
 };
-AddTodo.contextTypes = {
-    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
-};
+AddTodo = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])()(AddTodo);
 const Footer = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'p',
     null,
