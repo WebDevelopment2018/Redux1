@@ -1388,6 +1388,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
+
 let deepFreeze = __webpack_require__(49);
 
 const todo = (state, action) => {
@@ -1461,7 +1462,7 @@ const Link = ({
 
 class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
     componentDidMount() {
-        const { store } = this.props;
+        const { store } = this.context;
         this.unsubscribe = store.subscribe(() => this.forceUpdate());
     }
 
@@ -1471,7 +1472,7 @@ class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
 
     render() {
         const props = this.props;
-        const { store } = props;
+        const { store } = this.context;
         const state = store.getState();
 
         return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
@@ -1487,7 +1488,9 @@ class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
         );
     }
 }
-
+FilterLink.contextTypes = {
+    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
+};
 const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'li',
     {
@@ -1519,7 +1522,7 @@ const getVisibleTodos = (todos, filter) => {
             return todos.filter(t => !t.completed);
     }
 };
-const AddTodo = ({ store }) => {
+const AddTodo = (props, { store }) => {
     let input;
     return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         'div',
@@ -1541,15 +1544,17 @@ const AddTodo = ({ store }) => {
         )
     );
 };
-const Footer = ({ store }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+AddTodo.contextTypes = {
+    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
+};
+const Footer = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'p',
     null,
     'Show:',
     __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         FilterLink,
         {
-            filter: 'SHOW_ALL',
-            store: store
+            filter: 'SHOW_ALL'
         },
         'All'
     ),
@@ -1557,16 +1562,15 @@ const Footer = ({ store }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.crea
     __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         FilterLink,
         {
-            filter: 'SHOW_ACTIVE',
-            store: store
+            filter: 'SHOW_ACTIVE'
         },
         'Active'
     ),
     ', ',
     __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         FilterLink,
-        { filter: 'SHOW_COMPLETED',
-            store: store
+        {
+            filter: 'SHOW_COMPLETED'
         },
         'Completed'
     )
@@ -1574,7 +1578,7 @@ const Footer = ({ store }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.crea
 
 class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
     componentDidMount() {
-        const { store } = this.props;
+        const { store } = this.context;
         this.unsubscribe = store.subscribe(() => this.forceUpdate());
     }
 
@@ -1584,7 +1588,7 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
 
     render() {
         const props = this.props;
-        const { store } = props;
+        const { store } = this.context;
         const state = store.getState();
 
         return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
@@ -1596,17 +1600,40 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
         });
     }
 }
+
+VisibleTodoList.contextTypes = {
+    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
+};
 let nextTodoId = 0;
-const TodoApp = ({ store }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+const TodoApp = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'div',
     null,
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(AddTodo, { store: store }),
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(VisibleTodoList, { store: store }),
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(Footer, { store: store })
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(AddTodo, null),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(VisibleTodoList, null),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(Footer, null)
 );
 
+class Provider extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
+    getChildContext() {
+        return {
+            store: this.props.store
+        };
+    }
+    render() {
+        return this.props.children;
+    }
+}
+
+Provider.childContextTypes = {
+    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
+};
+
 const render = () => {
-    __WEBPACK_IMPORTED_MODULE_2_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoApp, { store: Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* createStore */])(todoApp) }), document.getElementById('root'));
+    __WEBPACK_IMPORTED_MODULE_2_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+        Provider,
+        { store: Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* createStore */])(todoApp) },
+        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoApp, null)
+    ), document.getElementById('root'));
 };
 render();
 
