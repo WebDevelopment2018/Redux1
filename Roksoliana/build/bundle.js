@@ -1391,6 +1391,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
+
 let deepFreeze = __webpack_require__(49);
 
 const todo = (state, action) => {
@@ -1524,6 +1525,23 @@ const getVisibleTodos = (todos, filter) => {
             return todos.filter(t => !t.completed);
     }
 };
+const mapStateToProps = state => {
+    return {
+        todos: getVisibleTodos(state.todos, state.visibilityFilter)
+    };
+};
+const mapDispatchToProps = dispatch => {
+    return {
+        onTodoClick: id => {
+            dispatch({
+                type: 'TOGGLE_TODO',
+                id
+            });
+        }
+    };
+};
+const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(TodoList);
+
 const AddTodo = (props, { store }) => {
     let input;
     return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
@@ -1578,34 +1596,6 @@ const Footer = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement
     )
 );
 
-class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
-    componentDidMount() {
-        const { store } = this.context;
-        this.unsubscribe = store.subscribe(() => this.forceUpdate());
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    render() {
-        const props = this.props;
-        const { store } = this.context;
-        const state = store.getState();
-
-        return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
-            todos: getVisibleTodos(state.todos, state.visibilityFilter),
-            onTodoClick: id => store.dispatch({
-                type: 'TOGGLE_TODO',
-                id
-            })
-        });
-    }
-}
-
-VisibleTodoList.contextTypes = {
-    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
-};
 let nextTodoId = 0;
 const TodoApp = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'div',
@@ -20653,7 +20643,7 @@ function verifyPlainObject(value, displayName, methodName) {
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__components_Provider__["a"]; });
 /* unused harmony reexport createProvider */
 /* unused harmony reexport connectAdvanced */
-/* unused harmony reexport connect */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_2__connect_connect__["a"]; });
 
 
 
@@ -21094,7 +21084,7 @@ function createConnect() {
   };
 }
 
-/* unused harmony default export */ var _unused_webpack_default_export = (createConnect());
+/* harmony default export */ __webpack_exports__["a"] = (createConnect());
 
 /***/ }),
 /* 64 */
