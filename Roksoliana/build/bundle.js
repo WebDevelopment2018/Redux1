@@ -1391,9 +1391,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 
 
-
-let deepFreeze = __webpack_require__(49);
-
 const todo = (state, action) => {
     switch (action.type) {
         case 'ADD_TODO':
@@ -1413,7 +1410,6 @@ const todo = (state, action) => {
             return state;
     }
 };
-
 const todos = (state = [], action) => {
     switch (action.type) {
         case 'ADD_TODO':
@@ -1424,7 +1420,6 @@ const todos = (state = [], action) => {
             return state;
     }
 };
-
 const visibilityFilter = (state = 'SHOW_ALL', action) => {
     switch (action.type) {
         case 'SET_VISIBILITY_FILTER':
@@ -1472,11 +1467,14 @@ const mapStateToLinkProps = (state, ownProps) => {
 const mapDispatchToLinkProps = (dispatch, ownProps) => {
     return {
         onClick: () => {
-            dispatch({
-                type: 'SET_VISIBILITY_FILTER',
-                filter: ownProps.filter
-            });
+            dispatch(setVisibilityFilter(ownProps.filter));
         }
+    };
+};
+const setVisibilityFilter = filter => {
+    return {
+        type: 'SET_VISIBILITY_FILTER',
+        filter
     };
 };
 const FilterLink = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])(mapStateToLinkProps, mapDispatchToLinkProps)(Link);
@@ -1519,11 +1517,14 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onTodoClick: id => {
-            dispatch({
-                type: 'TOGGLE_TODO',
-                id
-            });
+            dispatch(toggleTodo(id));
         }
+    };
+};
+const toggleTodo = id => {
+    return {
+        type: 'TOGGLE_TODO',
+        id
     };
 };
 const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(TodoList);
@@ -1539,16 +1540,19 @@ let AddTodo = ({ dispatch }) => {
         __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
             'button',
             { onClick: () => {
-                    dispatch({
-                        type: 'ADD_TODO',
-                        id: nextTodoId++,
-                        text: input.value
-                    });
+                    dispatch(addTodo(input.value));
                     input.value = ' ';
                 } },
             'Add Todo'
         )
     );
+};
+const addTodo = text => {
+    return {
+        type: 'ADD_TODO',
+        id: nextTodoId++,
+        text
+    };
 };
 AddTodo = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])()(AddTodo);
 const Footer = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
@@ -19500,21 +19504,7 @@ module.exports = camelize;
 
 /***/ }),
 /* 48 */,
-/* 49 */
-/***/ (function(module, exports) {
-
-module.exports = function deepfreeze (o) {
-  if (o===Object(o)) {
-    Object.isFrozen(o) || Object.freeze(o)
-    Object.getOwnPropertyNames(o).forEach(function (prop) {
-      prop==='constructor'||deepfreeze(o[prop])
-    })
-  }
-  return o
-}
-
-
-/***/ }),
+/* 49 */,
 /* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
