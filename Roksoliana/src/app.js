@@ -54,8 +54,6 @@ const todoApp = combineReducers({
     visibilityFilter: visibilityFilter
 });
 
-const store = createStore(todoApp);
-
 const Link = ({
                   active,
                   children,
@@ -78,6 +76,7 @@ const Link = ({
 
 class FilterLink extends Component {
     componentDidMount() {
+        const { store } = this.props;
         this.unsubscribe = store.subscribe(() =>
             this.forceUpdate()
         );
@@ -89,6 +88,7 @@ class FilterLink extends Component {
 
     render() {
         const props = this.props;
+        const { store } = props;
         const state = store.getState();
 
         return (
@@ -151,7 +151,7 @@ const getVisibleTodos = (todos,
             );
     }
 };
-const AddTodo = () => {
+const AddTodo = ({store}) => {
     let input;
     return (
         <div>
@@ -171,29 +171,25 @@ const AddTodo = () => {
         </div>
     );
 };
-const Footer = ({visibilityFilter, onFilterClick}) => (
+const Footer = ({store}) => (
     <p>
         Show:
         <FilterLink
             filter='SHOW_ALL'
-            currentFilter={visibilityFilter}
-            onClick={onFilterClick}
+            store={store}
         >
             All
         </FilterLink>
         {', '}
         <FilterLink
             filter='SHOW_ACTIVE'
-            currentFilter={visibilityFilter}
-            onClick={onFilterClick}
+            store={store}
         >
             Active
         </FilterLink>
         {', '}
-        <FilterLink
-            filter='SHOW_COMPLETED'
-            currentFilter={visibilityFilter}
-            onClick={onFilterClick}
+        <FilterLink filter='SHOW_COMPLETED'
+                    store={store}
         >
             Completed
         </FilterLink>
@@ -202,6 +198,7 @@ const Footer = ({visibilityFilter, onFilterClick}) => (
 
 class VisibleTodoList extends Component {
     componentDidMount() {
+        const { store } = this.props;
         this.unsubscribe = store.subscribe(() =>
             this.forceUpdate()
         );
@@ -213,6 +210,7 @@ class VisibleTodoList extends Component {
 
     render() {
         const props = this.props;
+        const { store } = props;
         const state = store.getState();
 
         return (
@@ -233,20 +231,21 @@ class VisibleTodoList extends Component {
         );
     }
 }
-
 let nextTodoId = 0;
+const TodoApp = ({ store }) =>
+    (
+        <div>
+            <AddTodo store={store} />
+            <VisibleTodoList store={store}/>
+            <Footer store={store}/>
+        </div>
+    );
 
-const TodoApp = () =>
-    <div>
-        <AddTodo/>
-        <VisibleTodoList/>
-        <Footer/>
-    </div>;
-
-ReactDOM.render(
-    <TodoApp
-        {...store.getState()}
-    />,
-    document.getElementById('root')
-);
+const render = () => {
+    ReactDOM.render(
+        <TodoApp store={createStore(todoApp)}/>,
+        document.getElementById('root')
+    )
+};
+render();
 
