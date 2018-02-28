@@ -1437,7 +1437,7 @@ const todoApp = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* combineReducer
 
 const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* createStore */])(todoApp);
 
-const FilterLink = ({ filter, currentFilter, children }) => {
+const FilterLink = ({ filter, currentFilter, children, onClick }) => {
     if (filter === currentFilter) {
         return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
             'span',
@@ -1450,10 +1450,7 @@ const FilterLink = ({ filter, currentFilter, children }) => {
         { href: '#',
             onClick: e => {
                 e.preventDefault();
-                store.dispatch({
-                    type: 'SET_VISIBILITY_FILTER',
-                    filter
-                });
+                onClick(filter);
             }
         },
         children
@@ -1490,76 +1487,85 @@ const getVisibleTodos = (todos, filter) => {
             return todos.filter(t => !t.completed);
     }
 };
+const AddTodo = ({ onAddClick }) => {
+    let input;
+    return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+        'div',
+        null,
+        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement('input', { ref: node => {
+                input = node;
+            } }),
+        __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+            'button',
+            { onClick: () => {
+                    onAddClick(input.value);
+                    input.value = ' ';
+                } },
+            'Add Todo'
+        )
+    );
+};
+const Footer = ({ visibilityFilter, onFilterClick }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+    'p',
+    null,
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+        FilterLink,
+        {
+            filter: 'SHOW_ALL',
+            currentFilter: visibilityFilter,
+            onClick: onFilterClick
+        },
+        'All'
+    ),
+    ', ',
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+        FilterLink,
+        {
+            filter: 'SHOW_ACTIVE',
+            currentFilter: visibilityFilter,
+            onClick: onFilterClick
+        },
+        'Active'
+    ),
+    ', ',
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+        FilterLink,
+        {
+            filter: 'SHOW_COMPLETED',
+            currentFilter: visibilityFilter,
+            onClick: onFilterClick
+        },
+        'Completed'
+    )
+);
 
 let nextTodoId = 0;
 
-class TodoApp extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
-    render() {
-        const {
-            todos,
-            visibilityFilter
-        } = this.props;
-        const visibleTodos = getVisibleTodos(todos, visibilityFilter);
-        return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-            'div',
-            null,
-            __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement('input', { ref: node => {
-                    this.input = node;
-                } }),
-            __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-                'button',
-                { onClick: () => {
-                        store.dispatch({
-                            type: 'ADD_TODO',
-                            text: this.input.value,
-                            id: nextTodoId++
-                        });
-                        this.input.value = ' ';
-                    } },
-                'Add Todo'
-            ),
-            __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
-                todos: visibleTodos,
-                onTodoClick: id => store.dispatch({
-                    type: 'TOGGLE_TODO',
-                    id
-                })
-            }),
-            __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-                'p',
-                null,
-                'Show:',
-                ' ',
-                __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-                    FilterLink,
-                    {
-                        filter: 'SHOW_ALL',
-                        currentFilter: visibilityFilter
-                    },
-                    'All'
-                ),
-                ' ',
-                __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-                    FilterLink,
-                    {
-                        filter: 'SHOW_ACTIVE',
-                        currentFilter: visibilityFilter
-                    },
-                    'Active'
-                ),
-                ' ',
-                __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-                    FilterLink,
-                    {
-                        filter: 'SHOW_COMPLETED',
-                        currentFilter: visibilityFilter
-                    },
-                    'Completed'
-                )
-            )
-        );
-    }
-}
+const TodoApp = ({ todos, visibilityFilter }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+    'div',
+    null,
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(AddTodo, {
+        onAddClick: text => store.dispatch({
+            type: 'ADD_TODO',
+            id: nextTodoId++,
+            text
+        })
+    }),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
+        todos: getVisibleTodos(todos, visibilityFilter),
+        onTodoClick: id => store.dispatch({
+            type: 'TOGGLE_TODO',
+            id
+        })
+    }),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(Footer, {
+        visibilityFilter: visibilityFilter,
+        onFilterClick: filter => store.dispatch({
+            type: 'SET_VISIBILITY_FILTER',
+            filter
+        })
+    })
+);
 
 const render = () => {
     __WEBPACK_IMPORTED_MODULE_2_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoApp, store.getState()), document.getElementById('root'));
