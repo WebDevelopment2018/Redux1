@@ -1463,37 +1463,23 @@ const Link = ({
     );
 };
 
-class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
-    componentDidMount() {
-        const { store } = this.context;
-        this.unsubscribe = store.subscribe(() => this.forceUpdate());
-    }
-
-    componentWillUnmount() {
-        this.unsubscribe();
-    }
-
-    render() {
-        const props = this.props;
-        const { store } = this.context;
-        const state = store.getState();
-
-        return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
-            Link,
-            {
-                active: props.filter === state.visibilityFilter,
-                onClick: () => store.dispatch({
-                    type: 'SET_VISIBILITY_FILTER',
-                    filter: props.filter
-                })
-            },
-            props.children
-        );
-    }
-}
-FilterLink.contextTypes = {
-    store: __WEBPACK_IMPORTED_MODULE_1_react___default.a.object
+const mapStateToLinkProps = (state, ownProps) => {
+    return {
+        active: ownProps.filter === state.visibilityFilter
+    };
 };
+
+const mapDispatchToLinkProps = (dispatch, ownProps) => {
+    return {
+        onClick: () => {
+            dispatch({
+                type: 'SET_VISIBILITY_FILTER',
+                filter: ownProps.filter
+            });
+        }
+    };
+};
+const FilterLink = Object(__WEBPACK_IMPORTED_MODULE_3_react_redux__["b" /* connect */])(mapStateToLinkProps, mapDispatchToLinkProps)(Link);
 const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'li',
     {
