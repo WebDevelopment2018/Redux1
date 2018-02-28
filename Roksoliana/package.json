@@ -20,6 +20,7 @@
     "css-loader": "^0.28.9",
     "deepfreeze": "^2.0.0",
     "expect": "^22.4.0",
+    "react-redux": "^5.0.7",
     "style-loader": "^0.20.2"
   },
   "devDependencies": {
