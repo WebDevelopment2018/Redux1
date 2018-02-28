@@ -1440,7 +1440,8 @@ const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* createStore */])
 const Link = ({
     active,
     children,
-    onClick }) => {
+    onClick
+}) => {
     if (active) {
         return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
             'span',
@@ -1464,6 +1465,7 @@ class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
     componentDidMount() {
         this.unsubscribe = store.subscribe(() => this.forceUpdate());
     }
+
     componentWillUnmount() {
         this.unsubscribe();
     }
@@ -1485,6 +1487,7 @@ class FilterLink extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
         );
     }
 }
+
 const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'li',
     {
@@ -1516,7 +1519,7 @@ const getVisibleTodos = (todos, filter) => {
             return todos.filter(t => !t.completed);
     }
 };
-const AddTodo = ({ onAddClick }) => {
+const AddTodo = () => {
     let input;
     return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
         'div',
@@ -1527,7 +1530,11 @@ const AddTodo = ({ onAddClick }) => {
         __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
             'button',
             { onClick: () => {
-                    onAddClick(input.value);
+                    store.dispatch({
+                        type: 'ADD_TODO',
+                        id: nextTodoId++,
+                        text: input.value
+                    });
                     input.value = ' ';
                 } },
             'Add Todo'
@@ -1569,40 +1576,40 @@ const Footer = ({ visibilityFilter, onFilterClick }) => __WEBPACK_IMPORTED_MODUL
     )
 );
 
+class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_1_react__["Component"] {
+    componentDidMount() {
+        this.unsubscribe = store.subscribe(() => this.forceUpdate());
+    }
+
+    componentWillUnmount() {
+        this.unsubscribe();
+    }
+
+    render() {
+        const props = this.props;
+        const state = store.getState();
+
+        return __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
+            todos: getVisibleTodos(state.todos, state.visibilityFilter),
+            onTodoClick: id => store.dispatch({
+                type: 'TOGGLE_TODO',
+                id
+            })
+        });
+    }
+}
+
 let nextTodoId = 0;
 
-const TodoApp = ({ todos, visibilityFilter }) => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
+const TodoApp = () => __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(
     'div',
     null,
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(AddTodo, {
-        onAddClick: text => store.dispatch({
-            type: 'ADD_TODO',
-            id: nextTodoId++,
-            text
-        })
-    }),
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoList, {
-        todos: getVisibleTodos(todos, visibilityFilter),
-        onTodoClick: id => store.dispatch({
-            type: 'TOGGLE_TODO',
-            id
-        })
-    }),
-    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(Footer, {
-        visibilityFilter: visibilityFilter,
-        onFilterClick: filter => store.dispatch({
-            type: 'SET_VISIBILITY_FILTER',
-            filter
-        })
-    })
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(AddTodo, null),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(VisibleTodoList, null),
+    __WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(Footer, null)
 );
 
-const render = () => {
-    __WEBPACK_IMPORTED_MODULE_2_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoApp, store.getState()), document.getElementById('root'));
-};
-
-store.subscribe(render);
-render();
+__WEBPACK_IMPORTED_MODULE_2_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_1_react___default.a.createElement(TodoApp, store.getState()), document.getElementById('root'));
 
 /***/ }),
 /* 21 */
