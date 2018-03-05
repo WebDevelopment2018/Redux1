@@ -1,12 +1,8 @@
 import React from "react";
 import {connect} from 'react-redux';
 
-let nextTodoId = 0;
-const addTodo = (text) => ({
-    type: 'ADD_TODO',
-    id: nextTodoId++,
-    text
-});
+
+import {addTodo} from "../actions";
 
 let AddTodo = ({dispatch}) => {
     let input;
