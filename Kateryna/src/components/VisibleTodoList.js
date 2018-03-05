@@ -6,27 +6,24 @@ import {toggleTodo} from "../actions";
 
 const getVisibleTodos = (todos, filter) => {
     switch (filter) {
-        case 'SHOW_ALL':
+        case 'all':
             return todos;
-        case 'SHOW_COMPLETED':
-            // Use the `Array.filter()` method
-            return todos.filter(
-                t => t.completed
-            );
-        case 'SHOW_ACTIVE':
-            return todos.filter(
-                t => !t.completed
-            );
+        case 'completed':
+            return todos.filter(t => t.completed);
+        case 'active':
+            return todos.filter(t => !t.completed);
+        default:
+            throw new Error(`Unknown filter: ${filter}.`);
     }
-}
-const mapStateToProps = (state) => ({
+};
+
+
+const mapStateToProps = (state,ownProps) => ({
     todos: getVisibleTodos(
         state.todos,
-        state.visibilityFilter
+        ownProps.filter
     )
 });
-
-
 
 const mapDispatchToProps = (dispatch) => ({
     onTodoClick: (id) => {
