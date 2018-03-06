@@ -57710,7 +57710,7 @@ const todo = (state, action) => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_throttle__ = __webpack_require__(612);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_throttle___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_throttle__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reducers__ = __webpack_require__(249);
@@ -57720,19 +57720,38 @@ const todo = (state, action) => {
 
 
 
+const addLoggingToDispatch = store => {
+    const rawDispatch = store.dispatch;
+    return action => {
+        console.group(action.type);
+        console.log('%c prev state', 'color: gray', store.getState());
+        console.log('%c action', 'color: blue', action);
+        const returnValue = rawDispatch(action);
+        console.log('%c next state', 'color: green', store.getState());
+        console.groupEnd(action.type);
+        return returnValue;
+    };
+};
+
 const configureStore = () => {
     const persistedState = Object(__WEBPACK_IMPORTED_MODULE_3__localStorage__["a" /* loadState */])();
     const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* createStore */])(__WEBPACK_IMPORTED_MODULE_2__reducers__["a" /* default */], persistedState);
+
+    if (process.env.NODE_ENV !== 'production') {
+        store.dispatch = addLoggingToDispatch(store);
+    }
 
     store.subscribe(__WEBPACK_IMPORTED_MODULE_1_lodash_throttle___default()(() => {
         Object(__WEBPACK_IMPORTED_MODULE_3__localStorage__["b" /* saveState */])({
             todos: store.getState().todos
         });
     }, 1000));
+
     return store;
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (configureStore);
+/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(8)))
 
 /***/ }),
 /* 612 */
