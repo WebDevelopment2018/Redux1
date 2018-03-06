@@ -11,5 +11,5 @@ const TodoList = ({todos, onTodoClick}) => (
             />
         )}
     </ul>
-)
+);
 export default TodoList;
