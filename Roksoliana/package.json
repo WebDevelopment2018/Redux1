@@ -29,6 +29,7 @@
     "style-loader": "^0.20.2"
   },
   "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "less": "^3.0.1",
     "less-loader": "^4.0.5",
     "react": "^16.2.0",
