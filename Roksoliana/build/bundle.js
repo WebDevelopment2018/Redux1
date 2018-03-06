@@ -57492,25 +57492,15 @@ function randomFillSync (buf, offset, size) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TodoList__ = __webpack_require__(605);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_redux__ = __webpack_require__(129);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_router__ = __webpack_require__(623);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__reducers__ = __webpack_require__(618);
 
 
 
 
 
-const getVisibleTodos = (todos, filter) => {
-    switch (filter) {
-        case 'all':
-            return todos;
-        case 'completed':
-            return todos.filter(t => t.completed);
-        case 'active':
-            return todos.filter(t => !t.completed);
-        default:
-            throw new Error(`Unknown filter: ${filter}.`);
-    }
-};
+
 const mapStateToProps = (state, { match }) => ({
-    todos: getVisibleTodos(state.todos, match.params.filter || 'all')
+    todos: Object(__WEBPACK_IMPORTED_MODULE_4__reducers__["b" /* getVisibleTodos */])(state, match.params.filter || 'all')
 });
 const toggleTodo = id => ({
     type: 'TOGGLE_TODO',
@@ -58173,11 +58163,14 @@ module.exports = isObjectLike;
 
 
 const todoApp = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* combineReducers */])({
-    todos: __WEBPACK_IMPORTED_MODULE_1__todos__["a" /* todos */]
+    todos: __WEBPACK_IMPORTED_MODULE_1__todos__["a" /* default */]
 });
-/* unused harmony export todoApp */
 
 /* harmony default export */ __webpack_exports__["a"] = (todoApp);
+
+const getVisibleTodos = (state, filter) => __WEBPACK_IMPORTED_MODULE_1__todos__["b" /* getVisibleTodos */](state.todos, filter);
+/* harmony export (immutable) */ __webpack_exports__["b"] = getVisibleTodos;
+
 
 /***/ }),
 /* 619 */
@@ -58197,8 +58190,23 @@ const todos = (state = [], action) => {
             return state;
     }
 };
-/* harmony export (immutable) */ __webpack_exports__["a"] = todos;
+/* unused harmony export todos */
 
+const getVisibleTodos = (state, filter) => {
+    switch (filter) {
+        case 'all':
+            return state;
+        case 'completed':
+            return state.filter(t => t.completed);
+        case 'active':
+            return state.filter(t => !t.completed);
+        default:
+            throw new Error(`Unknown filter: ${filter}.`);
+    }
+};
+/* harmony export (immutable) */ __webpack_exports__["b"] = getVisibleTodos;
+
+/* harmony default export */ __webpack_exports__["a"] = (todos);
 
 /***/ }),
 /* 620 */
