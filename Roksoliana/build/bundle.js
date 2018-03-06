@@ -48960,88 +48960,80 @@ const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_0_react
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__todo__ = __webpack_require__(610);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 
 
 
 const byId = (state = {}, action) => {
     switch (action.type) {
-        case 'ADD_TODO':
-        case 'TOGGLE_TODO':
-            return _extends({}, state, {
-                [action.id]: Object(__WEBPACK_IMPORTED_MODULE_1__todo__["a" /* default */])(state[action.id], action)
+        case 'RECEIVE_TODOS':
+            const nextState = _extends({}, state);
+            action.response.forEach(todo => {
+                nextState[todo.id] = todo;
             });
+            return nextState;
         default:
             return state;
     }
 };
 
 const allIds = (state = [], action) => {
+    if (action.filter !== 'all') {
+        return state;
+    }
     switch (action.type) {
-        case 'ADD_TODO':
-            return [...state, action.id];
+        case 'RECEIVE_TODOS':
+            return action.response.map(todo => todo.id);
         default:
             return state;
     }
 };
-
+const activeIds = (state = [], action) => {
+    if (action.filter !== 'active') {
+        return state;
+    }
+    switch (action.type) {
+        case 'RECEIVE_TODOS':
+            return action.response.map(todo => todo.id);
+        default:
+            return state;
+    }
+};
+const completedIds = (state = [], action) => {
+    if (action.filter !== 'completed') {
+        return state;
+    }
+    switch (action.type) {
+        case 'RECEIVE_TODOS':
+            return action.response.map(todo => todo.id);
+        default:
+            return state;
+    }
+};
+const idsByFilter = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
+    all: allIds,
+    active: activeIds,
+    completed: completedIds
+});
 const todos = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
     byId,
-    allIds
+    idsByFilter
 });
 
 /* harmony default export */ __webpack_exports__["a"] = (todos);
 
-const getAllTodos = state => state.allIds.map(id => state.byId[id]);
+// const getAllTodos = (state) =>
+//     state.allIds.map(id => state.byId[id]);
 
 const getVisibleTodos = (state, filter) => {
-    const allTodos = getAllTodos(state);
-    switch (filter) {
-        case 'all':
-            return allTodos;
-        case 'completed':
-            return allTodos.filter(t => t.completed);
-        case 'active':
-            return allTodos.filter(t => !t.completed);
-        default:
-            throw new Error(`Unknown filter: ${filter}.`);
-    }
+    const ids = state.idsByFilter[filter];
+    return ids.map(id => state.byId[id]);
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = getVisibleTodos;
 
 
 /***/ }),
-/* 610 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-const todo = (state, action) => {
-    switch (action.type) {
-        case 'ADD_TODO':
-            return {
-                id: action.id,
-                text: action.text,
-                completed: false
-            };
-        case 'TOGGLE_TODO':
-            if (state.id !== action.id) {
-                return state;
-            }
-            return _extends({}, state, {
-                completed: !state.completed
-            });
-        default:
-            return state;
-    }
-};
-
-/* harmony default export */ __webpack_exports__["a"] = (todo);
-
-/***/ }),
+/* 610 */,
 /* 611 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
