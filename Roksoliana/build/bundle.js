@@ -47127,11 +47127,13 @@ var withRouter = function withRouter(Component) {
 
 
 
-const App = () => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+const App = ({ match }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
     "div",
     null,
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__AddTodo__["a" /* default */], null),
-    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__VisibleTodoList__["a" /* default */], null),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__VisibleTodoList__["a" /* default */], {
+        filter: match.params.filter || 'all'
+    }),
     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__Footer__["a" /* default */], null)
 );
 
@@ -57497,18 +57499,19 @@ function randomFillSync (buf, offset, size) {
 
 const getVisibleTodos = (todos, filter) => {
     switch (filter) {
-        case 'SHOW_ALL':
+        case 'all':
             return todos;
-        case 'SHOW_COMPLETED':
+        case 'completed':
             return todos.filter(t => t.completed);
-        case 'SHOW_ACTIVE':
+        case 'active':
             return todos.filter(t => !t.completed);
+        default:
+            throw new Error(`Unknown filter: ${filter}.`);
     }
 };
-const mapStateToProps = state => ({
-    todos: getVisibleTodos(state.todos, state.visibilityFilter)
+const mapStateToProps = (state, ownProps) => ({
+    todos: getVisibleTodos(state.todos, ownProps.filter)
 });
-
 const toggleTodo = id => ({
     type: 'TOGGLE_TODO',
     id
@@ -58172,14 +58175,11 @@ module.exports = isObjectLike;
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(131);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__todos__ = __webpack_require__(619);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__visibilityFilter__ = __webpack_require__(621);
-
 
 
 
 const todoApp = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["b" /* combineReducers */])({
-    todos: __WEBPACK_IMPORTED_MODULE_1__todos__["a" /* todos */],
-    visibilityFilter: __WEBPACK_IMPORTED_MODULE_2__visibilityFilter__["a" /* visibilityFilter */]
+    todos: __WEBPACK_IMPORTED_MODULE_1__todos__["a" /* todos */]
 });
 /* unused harmony export todoApp */
 
@@ -58235,22 +58235,7 @@ const todo = (state, action) => {
 
 
 /***/ }),
-/* 621 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-const visibilityFilter = (state = 'SHOW_ALL', action) => {
-    switch (action.type) {
-        case 'SET_VISIBILITY_FILTER':
-            return action.filter;
-        default:
-            return state;
-    }
-};
-/* harmony export (immutable) */ __webpack_exports__["a"] = visibilityFilter;
-
-
-/***/ }),
+/* 621 */,
 /* 622 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
