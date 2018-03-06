@@ -16813,17 +16813,28 @@ module.exports = withPublic;
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__todos__ = __webpack_require__(609);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__byId__ = __webpack_require__(633);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__createList__ = __webpack_require__(634);
 
 
 
-const todoApp = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
-    todos: __WEBPACK_IMPORTED_MODULE_1__todos__["a" /* default */]
+
+const listByFilter = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
+    all: Object(__WEBPACK_IMPORTED_MODULE_2__createList__["a" /* default */])('all'),
+    active: Object(__WEBPACK_IMPORTED_MODULE_2__createList__["a" /* default */])('active'),
+    completed: Object(__WEBPACK_IMPORTED_MODULE_2__createList__["a" /* default */])('completed')
+});
+const todos = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
+    byId: __WEBPACK_IMPORTED_MODULE_1__byId__["a" /* default */],
+    listByFilter
 });
 
-/* harmony default export */ __webpack_exports__["a"] = (todoApp);
+/* harmony default export */ __webpack_exports__["a"] = (todos);
 
-const getVisibleTodos = (state, filter) => __WEBPACK_IMPORTED_MODULE_1__todos__["b" /* getVisibleTodos */](state.todos, filter);
+const getVisibleTodos = (state, filter) => {
+    const ids = __WEBPACK_IMPORTED_MODULE_2__createList__["b" /* getIds */](state.listByFilter[filter]);
+    return ids.map(id => __WEBPACK_IMPORTED_MODULE_1__byId__["b" /* getTodo */](state.byId, id));
+};
 /* harmony export (immutable) */ __webpack_exports__["b"] = getVisibleTodos;
 
 
@@ -48955,84 +48966,7 @@ const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_0_react
 
 /***/ }),
 /* 608 */,
-/* 609 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-
-
-const byId = (state = {}, action) => {
-    switch (action.type) {
-        case 'RECEIVE_TODOS':
-            const nextState = _extends({}, state);
-            action.response.forEach(todo => {
-                nextState[todo.id] = todo;
-            });
-            return nextState;
-        default:
-            return state;
-    }
-};
-
-const allIds = (state = [], action) => {
-    if (action.filter !== 'all') {
-        return state;
-    }
-    switch (action.type) {
-        case 'RECEIVE_TODOS':
-            return action.response.map(todo => todo.id);
-        default:
-            return state;
-    }
-};
-const activeIds = (state = [], action) => {
-    if (action.filter !== 'active') {
-        return state;
-    }
-    switch (action.type) {
-        case 'RECEIVE_TODOS':
-            return action.response.map(todo => todo.id);
-        default:
-            return state;
-    }
-};
-const completedIds = (state = [], action) => {
-    if (action.filter !== 'completed') {
-        return state;
-    }
-    switch (action.type) {
-        case 'RECEIVE_TODOS':
-            return action.response.map(todo => todo.id);
-        default:
-            return state;
-    }
-};
-const idsByFilter = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
-    all: allIds,
-    active: activeIds,
-    completed: completedIds
-});
-const todos = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
-    byId,
-    idsByFilter
-});
-
-/* harmony default export */ __webpack_exports__["a"] = (todos);
-
-// const getAllTodos = (state) =>
-//     state.allIds.map(id => state.byId[id]);
-
-const getVisibleTodos = (state, filter) => {
-    const ids = state.idsByFilter[filter];
-    return ids.map(id => state.byId[id]);
-};
-/* harmony export (immutable) */ __webpack_exports__["b"] = getVisibleTodos;
-
-
-/***/ }),
+/* 609 */,
 /* 610 */,
 /* 611 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -49950,6 +49884,56 @@ function isNative(value) {
 }
 
 module.exports = isArray;
+
+
+/***/ }),
+/* 633 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+const byId = (state = {}, action) => {
+    switch (action.type) {
+        case 'RECEIVE_TODOS':
+            const nextState = _extends({}, state);
+            action.response.forEach(todo => {
+                nextState[todo.id] = todo;
+            });
+            return nextState;
+        default:
+            return state;
+    }
+};
+/* harmony default export */ __webpack_exports__["a"] = (byId);
+
+const getTodo = (state, id) => state[id];
+/* harmony export (immutable) */ __webpack_exports__["b"] = getTodo;
+
+
+/***/ }),
+/* 634 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+const createList = filter => {
+    return (state = [], action) => {
+        if (action.filter !== filter) {
+            return state;
+        }
+        switch (action.type) {
+            case 'RECEIVE_TODOS':
+                return action.response.map(todo => todo.id);
+            default:
+                return state;
+        }
+    };
+};
+
+/* harmony default export */ __webpack_exports__["a"] = (createList);
+
+const getIds = state => state;
+/* harmony export (immutable) */ __webpack_exports__["b"] = getIds;
 
 
 /***/ })
