@@ -28,9 +28,9 @@ export const fetchTodos = (filter) =>
             case 'all':
                 return fakeDatabase.todos;
             case 'completed':
-                return fakeDatabase.filter(t => t.completed);
+                return fakeDatabase.todos.filter(t => t.completed);
             case 'active':
-                return fakeDatabase.filter(t => !t.completed);
+                return fakeDatabase.todos.filter(t => !t.completed);
             default:
                 throw new Error(`Unknown filter: ${filter}.`);
         }
