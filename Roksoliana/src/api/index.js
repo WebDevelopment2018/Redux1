@@ -1,4 +1,4 @@
-import { v4 } from 'node-uuid';
+import {v4} from 'node-uuid';
 
 const fakeDatabase = {
     todos: [{
@@ -32,4 +32,4 @@ export const fetchTodos = (filter) =>
                 throw new Error(`Unknown filter: ${filter}.`);
         }
 
-    })
+    });

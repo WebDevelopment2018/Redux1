@@ -11960,7 +11960,7 @@ function verifyPlainObject(value, displayName, methodName) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__matchPath__ = __webpack_require__(508);
 /* unused harmony reexport matchPath */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__withRouter__ = __webpack_require__(509);
-/* unused harmony reexport withRouter */
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_12__withRouter__["a"]; });
 
 
 
@@ -38535,7 +38535,7 @@ var createMemoryHistory = function createMemoryHistory() {
 // Written in this round about way for babel-transform-imports
 
 
-/* unused harmony default export */ var _unused_webpack_default_export = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_withRouter__["a" /* default */]);
+/* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0_react_router_es_withRouter__["a" /* default */]);
 
 /***/ }),
 /* 510 */
@@ -48915,25 +48915,44 @@ function randomFillSync (buf, offset, size) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TodoList__ = __webpack_require__(606);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_redux__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_router__ = __webpack_require__(608);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__reducers__ = __webpack_require__(249);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(133);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_dom__ = __webpack_require__(203);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__TodoList__ = __webpack_require__(606);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions__ = __webpack_require__(624);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__reducers__ = __webpack_require__(249);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__api__ = __webpack_require__(623);
 
 
 
 
 
 
-const mapStateToProps = (state, { match }) => ({
-    todos: Object(__WEBPACK_IMPORTED_MODULE_4__reducers__["b" /* getVisibleTodos */])(state, match.params.filter || 'all')
-});
-const toggleTodo = id => ({
-    type: 'TOGGLE_TODO',
-    id
-});
 
-const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_router__["a" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_2_react_redux__["b" /* connect */])(mapStateToProps, { onTodoClick: toggleTodo })(__WEBPACK_IMPORTED_MODULE_1__TodoList__["a" /* default */]));
+
+
+class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
+    componentDidMount() {
+        Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(this.props.filter).then(todos => console.log(this.props.filter, todos));
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.filter !== prevProps.filter) {
+            Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(this.props.filter).then(todos => console.log(this.props.filter, todos));
+        }
+    }
+    render() {
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TodoList__["a" /* default */], this.props);
+    }
+}
+
+const mapStateToProps = (state, { match }) => {
+    const filter = match.params.filter || 'all';
+    return {
+        todos: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["b" /* getVisibleTodos */])(state, filter),
+        filter
+    };
+};
+
+VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_2_react_router_dom__["d" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, { onTodoClick: __WEBPACK_IMPORTED_MODULE_4__actions__["a" /* toggleTodo */] })(VisibleTodoList));
 
 /* harmony default export */ __webpack_exports__["a"] = (VisibleTodoList);
 
@@ -48983,48 +49002,7 @@ const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_0_react
 /* harmony default export */ __webpack_exports__["a"] = (Todo);
 
 /***/ }),
-/* 608 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MemoryRouter__ = __webpack_require__(208);
-/* unused harmony reexport MemoryRouter */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Prompt__ = __webpack_require__(210);
-/* unused harmony reexport Prompt */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Redirect__ = __webpack_require__(211);
-/* unused harmony reexport Redirect */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Route__ = __webpack_require__(139);
-/* unused harmony reexport Route */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Router__ = __webpack_require__(95);
-/* unused harmony reexport Router */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__StaticRouter__ = __webpack_require__(213);
-/* unused harmony reexport StaticRouter */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Switch__ = __webpack_require__(214);
-/* unused harmony reexport Switch */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__matchPath__ = __webpack_require__(96);
-/* unused harmony reexport matchPath */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__withRouter__ = __webpack_require__(215);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_8__withRouter__["a"]; });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***/ }),
+/* 608 */,
 /* 609 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -49749,7 +49727,9 @@ const saveState = state => {
     try {
         const serializedState = JSON.stringify(state);
         localStorage.setItem('state', serializedState);
-    } catch (err) {}
+    } catch (err) {
+        // Ignore write errors.
+    }
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = saveState;
 
@@ -49794,6 +49774,30 @@ const fetchTodos = filter => delay(500).then(() => {
     }
 });
 /* harmony export (immutable) */ __webpack_exports__["a"] = fetchTodos;
+
+
+/***/ }),
+/* 624 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid__ = __webpack_require__(514);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_node_uuid__);
+
+
+const addTodo = text => ({
+    type: 'ADD_TODO',
+    id: Object(__WEBPACK_IMPORTED_MODULE_0_node_uuid__["v4"])(),
+    text
+});
+/* unused harmony export addTodo */
+
+
+const toggleTodo = id => ({
+    type: 'TOGGLE_TODO',
+    id
+});
+/* harmony export (immutable) */ __webpack_exports__["a"] = toggleTodo;
 
 
 /***/ })
