@@ -5,7 +5,6 @@ import { withRouter } from 'react-router-dom';
 import TodoList from "./TodoList";
 import * as actions from '../actions';
 import {getVisibleTodos} from "../reducers";
-import {fetchTodos} from '../api';
 
 
 class VisibleTodoList extends Component {
@@ -20,10 +19,8 @@ class VisibleTodoList extends Component {
     }
 
     fetchData() {
-        const { filter, receiveTodos } = this.props;
-        fetchTodos(filter).then(todos =>
-            receiveTodos(filter, todos)
-        );
+        const { filter, fetchTodos} = this.props;
+        fetchTodos(filter);
     }
     render() {
         const { toggleTodo, ...rest } = this.props;
@@ -35,6 +32,7 @@ class VisibleTodoList extends Component {
         );
     }
 }
+
 const mapStateToProps = (state, { match }) => {
     const filter = match.params.filter || 'all';
     return {
@@ -42,6 +40,7 @@ const mapStateToProps = (state, { match }) => {
         filter,
     };
 };
+
 VisibleTodoList = withRouter(connect(
     mapStateToProps,
     actions

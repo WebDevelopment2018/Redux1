@@ -48920,11 +48920,9 @@ function randomFillSync (buf, offset, size) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__TodoList__ = __webpack_require__(606);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions__ = __webpack_require__(624);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__reducers__ = __webpack_require__(249);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__api__ = __webpack_require__(623);
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 
 
 
@@ -48946,8 +48944,8 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     }
 
     fetchData() {
-        const { filter, receiveTodos } = this.props;
-        Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(filter).then(todos => receiveTodos(filter, todos));
+        const { filter, fetchTodos } = this.props;
+        fetchTodos(filter);
     }
     render() {
         const _props = this.props,
@@ -48958,6 +48956,7 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
         }));
     }
 }
+
 const mapStateToProps = (state, { match }) => {
     const filter = match.params.filter || 'all';
     return {
@@ -48965,6 +48964,7 @@ const mapStateToProps = (state, { match }) => {
         filter
     };
 };
+
 VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_2_react_router_dom__["d" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, __WEBPACK_IMPORTED_MODULE_4__actions__)(VisibleTodoList));
 
 /* harmony default export */ __webpack_exports__["a"] = (VisibleTodoList);
@@ -49110,7 +49110,7 @@ const todo = (state, action) => {
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_throttle__ = __webpack_require__(612);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_throttle___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_throttle__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reducers__ = __webpack_require__(249);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reducers_index__ = __webpack_require__(249);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__localStorage__ = __webpack_require__(622);
 
 
@@ -49119,6 +49119,9 @@ const todo = (state, action) => {
 
 const addLoggingToDispatch = store => {
     const rawDispatch = store.dispatch;
+    if (!console.group) {
+        return rawDispatch;
+    }
     return action => {
         console.group(action.type);
         console.log('%c prev state', 'color: gray', store.getState());
@@ -49130,13 +49133,24 @@ const addLoggingToDispatch = store => {
     };
 };
 
+const addPromiseSupportToDispatch = store => {
+    const rawDispatch = store.dispatch;
+    return action => {
+        if (typeof action.then === 'function') {
+            return action.then(rawDispatch);
+        }
+        return rawDispatch(action);
+    };
+};
+
 const configureStore = () => {
     const persistedState = Object(__WEBPACK_IMPORTED_MODULE_3__localStorage__["a" /* loadState */])();
-    const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* createStore */])(__WEBPACK_IMPORTED_MODULE_2__reducers__["a" /* default */], persistedState);
+    const store = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* createStore */])(__WEBPACK_IMPORTED_MODULE_2__reducers_index__["a" /* default */], persistedState);
 
     if (process.env.NODE_ENV !== 'production') {
         store.dispatch = addLoggingToDispatch(store);
     }
+    store.dispatch = addPromiseSupportToDispatch(store);
 
     store.subscribe(__WEBPACK_IMPORTED_MODULE_1_lodash_throttle___default()(() => {
         Object(__WEBPACK_IMPORTED_MODULE_3__localStorage__["b" /* saveState */])({
@@ -49740,9 +49754,7 @@ const saveState = state => {
     try {
         const serializedState = JSON.stringify(state);
         localStorage.setItem('state', serializedState);
-    } catch (err) {
-        // Ignore write errors.
-    }
+    } catch (err) {}
 };
 /* harmony export (immutable) */ __webpack_exports__["b"] = saveState;
 
@@ -49797,6 +49809,9 @@ const fetchTodos = filter => delay(500).then(() => {
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid__ = __webpack_require__(514);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_node_uuid__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api__ = __webpack_require__(623);
+
+
 
 
 const addTodo = text => ({
@@ -49806,19 +49821,23 @@ const addTodo = text => ({
 });
 /* harmony export (immutable) */ __webpack_exports__["addTodo"] = addTodo;
 
+
+const fetchTodos = filter => __WEBPACK_IMPORTED_MODULE_1__api__["a" /* fetchTodos */](filter).then(response => receiveTodos(filter, response));
+/* harmony export (immutable) */ __webpack_exports__["fetchTodos"] = fetchTodos;
+
+
 const toggleTodo = id => ({
     type: 'TOGGLE_TODO',
     id
 });
 /* harmony export (immutable) */ __webpack_exports__["toggleTodo"] = toggleTodo;
 
+
 const receiveTodos = (filter, response) => ({
     type: 'RECEIVE_TODOS',
     filter,
     response
 });
-/* harmony export (immutable) */ __webpack_exports__["receiveTodos"] = receiveTodos;
-
 
 /***/ })
 /******/ ]);
