@@ -1,31 +1,11 @@
-import {createStore} from 'redux';
-import React from "react";
-import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
+import 'babel-polyfill';
+import React from 'react';
+import { render } from 'react-dom';
+import Root from './components/Root';
+import configureStore from './configureStore';
 
-import App from './components/App';
-import {todoApp} from "./reducers";
-import { loadState, saveState } from './localStorage';
-import throttle from 'lodash/throttle';
-
-const persistedState = loadState();
-
-const store = createStore(
-    todoApp,
-    persistedState
+const store = configureStore();
+render(
+    <Root store={store} />,
+    document.getElementById('root')
 );
-store.subscribe(throttle(() => {
-    saveState({
-        todos: store.getState().todos
-    })
-}, 1000));
-const render = () => {
-    ReactDOM.render(
-        <Provider store={store}>
-            <App/>
-        </Provider>,
-        document.getElementById('root')
-    )
-};
-render();
-
