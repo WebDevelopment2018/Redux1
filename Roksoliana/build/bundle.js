@@ -57517,13 +57517,7 @@ const toggleTodo = id => ({
     id
 });
 
-const mapDispatchToProps = dispatch => ({
-    onTodoClick: id => {
-        dispatch(toggleTodo(id));
-    }
-});
-
-const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_router__["a" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_2_react_redux__["b" /* connect */])(mapStateToProps, mapDispatchToProps)(__WEBPACK_IMPORTED_MODULE_1__TodoList__["a" /* default */]));
+const VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_3_react_router__["a" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_2_react_redux__["b" /* connect */])(mapStateToProps, { onTodoClick: toggleTodo })(__WEBPACK_IMPORTED_MODULE_1__TodoList__["a" /* default */]));
 
 /* harmony default export */ __webpack_exports__["a"] = (VisibleTodoList);
 
