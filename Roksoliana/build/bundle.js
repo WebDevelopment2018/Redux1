@@ -48921,6 +48921,10 @@ function randomFillSync (buf, offset, size) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions__ = __webpack_require__(624);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__reducers__ = __webpack_require__(249);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__api__ = __webpack_require__(623);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 
 
 
@@ -48932,18 +48936,28 @@ function randomFillSync (buf, offset, size) {
 
 class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     componentDidMount() {
-        Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(this.props.filter).then(todos => console.log(this.props.filter, todos));
+        this.fetchData();
     }
+
     componentDidUpdate(prevProps) {
         if (this.props.filter !== prevProps.filter) {
-            Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(this.props.filter).then(todos => console.log(this.props.filter, todos));
+            this.fetchData();
         }
     }
+
+    fetchData() {
+        const { filter, receiveTodos } = this.props;
+        Object(__WEBPACK_IMPORTED_MODULE_6__api__["a" /* fetchTodos */])(filter).then(todos => receiveTodos(filter, todos));
+    }
     render() {
-        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TodoList__["a" /* default */], this.props);
+        const _props = this.props,
+              { toggleTodo } = _props,
+              rest = _objectWithoutProperties(_props, ['toggleTodo']);
+        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TodoList__["a" /* default */], _extends({}, rest, {
+            onTodoClick: toggleTodo
+        }));
     }
 }
-
 const mapStateToProps = (state, { match }) => {
     const filter = match.params.filter || 'all';
     return {
@@ -48951,8 +48965,7 @@ const mapStateToProps = (state, { match }) => {
         filter
     };
 };
-
-VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_2_react_router_dom__["d" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, { onTodoClick: __WEBPACK_IMPORTED_MODULE_4__actions__["a" /* toggleTodo */] })(VisibleTodoList));
+VisibleTodoList = Object(__WEBPACK_IMPORTED_MODULE_2_react_router_dom__["d" /* withRouter */])(Object(__WEBPACK_IMPORTED_MODULE_1_react_redux__["b" /* connect */])(mapStateToProps, __WEBPACK_IMPORTED_MODULE_4__actions__)(VisibleTodoList));
 
 /* harmony default export */ __webpack_exports__["a"] = (VisibleTodoList);
 
@@ -49766,9 +49779,9 @@ const fetchTodos = filter => delay(500).then(() => {
         case 'all':
             return fakeDatabase.todos;
         case 'completed':
-            return fakeDatabase.filter(t => t.completed);
+            return fakeDatabase.todos.filter(t => t.completed);
         case 'active':
-            return fakeDatabase.filter(t => !t.completed);
+            return fakeDatabase.todos.filter(t => !t.completed);
         default:
             throw new Error(`Unknown filter: ${filter}.`);
     }
@@ -49781,6 +49794,7 @@ const fetchTodos = filter => delay(500).then(() => {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid__ = __webpack_require__(514);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_node_uuid__);
 
@@ -49790,14 +49804,20 @@ const addTodo = text => ({
     id: Object(__WEBPACK_IMPORTED_MODULE_0_node_uuid__["v4"])(),
     text
 });
-/* unused harmony export addTodo */
-
+/* harmony export (immutable) */ __webpack_exports__["addTodo"] = addTodo;
 
 const toggleTodo = id => ({
     type: 'TOGGLE_TODO',
     id
 });
-/* harmony export (immutable) */ __webpack_exports__["a"] = toggleTodo;
+/* harmony export (immutable) */ __webpack_exports__["toggleTodo"] = toggleTodo;
+
+const receiveTodos = (filter, response) => ({
+    type: 'RECEIVE_TODOS',
+    filter,
+    response
+});
+/* harmony export (immutable) */ __webpack_exports__["receiveTodos"] = receiveTodos;
 
 
 /***/ })
