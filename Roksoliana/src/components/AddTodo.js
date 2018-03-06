@@ -1,10 +1,10 @@
 import React from "react";
 import {connect} from 'react-redux';
+import { v4 } from 'node-uuid'
 
-let nextTodoId = 0;
-const addTodo = (text) => ({
+export const addTodo = (text) => ({
     type: 'ADD_TODO',
-    id: nextTodoId++,
+    id: v4(),
     text
 });
 
@@ -17,7 +17,7 @@ let AddTodo = ({dispatch}) => {
                 input = node;
             }}/>
             <button onClick={() => {
-                dispatch(addTodo(input.value))
+                dispatch(addTodo(input.value));
                 input.value = '';
             }}>
                 Add Todo
