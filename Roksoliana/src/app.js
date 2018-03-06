@@ -70,23 +70,16 @@ const Link = ({
     )
 };
 
-const mapStateToLinkProps = (state, ownProps) => {
-    return {
-        active:
-        ownProps.filter ===
-        state.visibilityFilter
-    }
-};
+const mapStateToLinkProps = (state, ownProps) => ({
+    active: ownProps.filter === state.visibilityFilter
+});
 
-const mapDispatchToLinkProps = (dispatch, ownProps) => {
-    return {
-        onClick: () => {
+const mapDispatchToLinkProps = (dispatch, ownProps) => ({
+        onClick()  {
             dispatch(
-                setVisibilityFilter(ownProps.filter)
-            );
+                setVisibilityFilter(ownProps.filter))
         }
-    };
-};
+});
 const setVisibilityFilter = (filter) => {
     return {
         type: 'SET_VISIBILITY_FILTER',
@@ -180,13 +173,11 @@ let AddTodo = ({dispatch}) => {
         </div>
     );
 };
-const addTodo = (text) => {
-    return {
-        type: 'ADD_TODO',
-        id: nextTodoId++,
-        text
-    };
-};
+export const addTodo = (text) => ({
+    type:'ADD_TODO',
+    id: (nextTodoId++).toString(),
+    text,
+});
 AddTodo = connect()(AddTodo);
 const Footer = () => (
     <p>
