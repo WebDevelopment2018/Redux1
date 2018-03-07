@@ -48895,7 +48895,7 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 
     fetchData() {
         const { filter, fetchTodos } = this.props;
-        fetchTodos(filter);
+        fetchTodos(filter).then(() => console.log("done!"));
     }
 
     render() {
@@ -48983,20 +48983,22 @@ const Todo = ({ onClick, completed, text }) => __WEBPACK_IMPORTED_MODULE_0_react
 /* WEBPACK VAR INJECTION */(function(process) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(94);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_logger__ = __webpack_require__(625);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_logger___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_logger__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reducers__ = __webpack_require__(249);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_redux_thunk__ = __webpack_require__(635);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_redux_thunk__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__reducers__ = __webpack_require__(249);
 
 
 
 
-const thunk = store => next => action => typeof action === 'function' ? action(store.dispatch) : next(action);
+
 
 const configureStore = () => {
-    const middlewares = [thunk];
+    const middlewares = [__WEBPACK_IMPORTED_MODULE_2_redux_thunk___default.a];
     if (process.env.NODE_ENV !== 'production') {
         middlewares.push(Object(__WEBPACK_IMPORTED_MODULE_1_redux_logger__["createLogger"])());
     }
 
-    return Object(__WEBPACK_IMPORTED_MODULE_0_redux__["d" /* createStore */])(__WEBPACK_IMPORTED_MODULE_2__reducers__["a" /* default */], Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* applyMiddleware */])(...middlewares));
+    return Object(__WEBPACK_IMPORTED_MODULE_0_redux__["d" /* createStore */])(__WEBPACK_IMPORTED_MODULE_3__reducers__["a" /* default */], Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* applyMiddleware */])(...middlewares));
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (configureStore);
@@ -49064,6 +49066,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid__ = __webpack_require__(514);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_node_uuid___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_node_uuid__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__api__ = __webpack_require__(623);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__reducers__ = __webpack_require__(249);
+
 
 
 
@@ -49080,7 +49084,10 @@ const receiveTodos = (filter, response) => ({
     response
 });
 
-const fetchTodos = filter => dispatch => {
+const fetchTodos = filter => (dispatch, getState) => {
+    if (Object(__WEBPACK_IMPORTED_MODULE_2__reducers__["b" /* getIsFetching */])(getState(), filter)) {
+        return Promise.resolve();
+    }
     dispatch(requestTodos(filter));
 
     return __WEBPACK_IMPORTED_MODULE_1__api__["a" /* fetchTodos */](filter).then(response => {
@@ -49191,6 +49198,35 @@ const getIds = state => state.ids;
 const getIsFetching = state => state.isFetching;
 /* harmony export (immutable) */ __webpack_exports__["c"] = getIsFetching;
 
+
+/***/ }),
+/* 635 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.__esModule = true;
+function createThunkMiddleware(extraArgument) {
+  return function (_ref) {
+    var dispatch = _ref.dispatch,
+        getState = _ref.getState;
+    return function (next) {
+      return function (action) {
+        if (typeof action === 'function') {
+          return action(dispatch, getState, extraArgument);
+        }
+
+        return next(action);
+      };
+    };
+  };
+}
+
+var thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+exports['default'] = thunk;
 
 /***/ })
 /******/ ]);
