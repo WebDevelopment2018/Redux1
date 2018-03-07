@@ -16445,7 +16445,7 @@ const toggleTodo = id => delay(500).then(() => {
     todo.completed = !todo.completed;
     return todo;
 });
-/* unused harmony export toggleTodo */
+/* harmony export (immutable) */ __webpack_exports__["c"] = toggleTodo;
 
 
 /***/ }),
@@ -48728,14 +48728,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const addTodo = text => dispatch => __WEBPACK_IMPORTED_MODULE_2__api__["a" /* addTodo */](text).then(response => {
-    dispatch({
-        type: 'ADD_TODO_SUCCESS',
-        response: Object(__WEBPACK_IMPORTED_MODULE_0_normalizr__["normalize"])(response, __WEBPACK_IMPORTED_MODULE_1__scheme__["b" /* todo */])
-    });
-});
-/* harmony export (immutable) */ __webpack_exports__["addTodo"] = addTodo;
-
 const fetchTodos = filter => (dispatch, getState) => {
     if (Object(__WEBPACK_IMPORTED_MODULE_3__reducers__["c" /* getIsFetching */])(getState(), filter)) {
         return Promise.resolve();
@@ -48759,6 +48751,23 @@ const fetchTodos = filter => (dispatch, getState) => {
     });
 };
 /* harmony export (immutable) */ __webpack_exports__["fetchTodos"] = fetchTodos;
+
+const addTodo = text => dispatch => __WEBPACK_IMPORTED_MODULE_2__api__["a" /* addTodo */](text).then(response => {
+    dispatch({
+        type: 'ADD_TODO_SUCCESS',
+        response: Object(__WEBPACK_IMPORTED_MODULE_0_normalizr__["normalize"])(response, __WEBPACK_IMPORTED_MODULE_1__scheme__["b" /* todo */])
+    });
+});
+/* harmony export (immutable) */ __webpack_exports__["addTodo"] = addTodo;
+
+
+const toggleTodo = id => dispatch => __WEBPACK_IMPORTED_MODULE_2__api__["c" /* toggleTodo */](id).then(response => {
+    dispatch({
+        type: 'TOGGLE_TODO_SUCCESS',
+        response: Object(__WEBPACK_IMPORTED_MODULE_0_normalizr__["normalize"])(response, __WEBPACK_IMPORTED_MODULE_1__scheme__["b" /* todo */])
+    });
+});
+/* harmony export (immutable) */ __webpack_exports__["toggleTodo"] = toggleTodo;
 
 
 /***/ }),
@@ -48790,12 +48799,20 @@ const getTodo = (state, id) => state[id];
 
 
 const createList = filter => {
+    const handleToggle = (state, action) => {
+        const { result: toggledId, entities } = action.response;
+        const { completed } = entities.todos[toggledId];
+        const shouldRemove = completed && filter === 'active' || !completed && filter === 'completed';
+        return shouldRemove ? state.filter(id => id !== toggledId) : state;
+    };
     const ids = (state = [], action) => {
         switch (action.type) {
             case 'FETCH_TODOS_SUCCESS':
                 return filter === action.filter ? action.response.result : state;
             case 'ADD_TODO_SUCCESS':
                 return filter !== 'completed' ? [...state, action.response.result] : state;
+            case 'TOGGLE_TODO_SUCCESS':
+                return handleToggle(state, action);
             default:
                 return state;
         }
