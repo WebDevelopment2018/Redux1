@@ -16832,14 +16832,18 @@ const todos = Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers 
 /* harmony default export */ __webpack_exports__["a"] = (todos);
 
 const getVisibleTodos = (state, filter) => {
-    const ids = __WEBPACK_IMPORTED_MODULE_2__createList__["b" /* getIds */](state.listByFilter[filter]);
+    const ids = __WEBPACK_IMPORTED_MODULE_2__createList__["c" /* getIds */](state.listByFilter[filter]);
     return ids.map(id => __WEBPACK_IMPORTED_MODULE_1__byId__["b" /* getTodo */](state.byId, id));
 };
-/* harmony export (immutable) */ __webpack_exports__["c"] = getVisibleTodos;
+/* harmony export (immutable) */ __webpack_exports__["d"] = getVisibleTodos;
 
 
-const getIsFetching = (state, filter) => __WEBPACK_IMPORTED_MODULE_2__createList__["c" /* getIsFetching */](state.listByFilter[filter]);
-/* harmony export (immutable) */ __webpack_exports__["b"] = getIsFetching;
+const getIsFetching = (state, filter) => __WEBPACK_IMPORTED_MODULE_2__createList__["d" /* getIsFetching */](state.listByFilter[filter]);
+/* harmony export (immutable) */ __webpack_exports__["c"] = getIsFetching;
+
+
+const getErrorMessage = (state, filter) => __WEBPACK_IMPORTED_MODULE_2__createList__["b" /* getErrorMessage */](state.listByFilter[filter]);
+/* harmony export (immutable) */ __webpack_exports__["b"] = getErrorMessage;
 
 
 /***/ }),
@@ -48874,6 +48878,8 @@ function randomFillSync (buf, offset, size) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__TodoList__ = __webpack_require__(606);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__actions__ = __webpack_require__(624);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__reducers__ = __webpack_require__(249);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FetchError__ = __webpack_require__(636);
+
 
 
 
@@ -48899,13 +48905,19 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
     }
 
     render() {
-        const { isFetching, toggleTodo, todos } = this.props;
+        const { isFetching, errorMessage, toggleTodo, todos } = this.props;
         if (isFetching && !todos.length) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'p',
                 null,
                 'Loading...'
             );
+        }
+        if (errorMessage && !todos.length) {
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_6__FetchError__["a" /* default */], {
+                message: errorMessage,
+                onRetry: () => this.fetchData()
+            });
         }
         return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TodoList__["a" /* default */], {
             todos: todos,
@@ -48917,8 +48929,9 @@ class VisibleTodoList extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 const mapStateToProps = (state, { match }) => {
     const filter = match.params.filter || 'all';
     return {
-        isFetching: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["b" /* getIsFetching */])(state, filter),
-        todos: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["c" /* getVisibleTodos */])(state, filter),
+        isFetching: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["c" /* getIsFetching */])(state, filter),
+        errorMessage: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["b" /* getErrorMessage */])(state, filter),
+        todos: Object(__WEBPACK_IMPORTED_MODULE_5__reducers__["d" /* getVisibleTodos */])(state, filter),
         filter
     };
 };
@@ -49043,6 +49056,9 @@ const fakeDatabase = {
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const fetchTodos = filter => delay(500).then(() => {
+    if (Math.random() > 0.5) {
+        throw new Error('Boom!');
+    }
     switch (filter) {
         case 'all':
             return fakeDatabase.todos;
@@ -49072,26 +49088,26 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-const requestTodos = filter => ({
-    type: 'REQUEST_TODOS',
-    filter
-});
-/* harmony export (immutable) */ __webpack_exports__["requestTodos"] = requestTodos;
-
-const receiveTodos = (filter, response) => ({
-    type: 'RECEIVE_TODOS',
-    filter,
-    response
-});
-
 const fetchTodos = filter => (dispatch, getState) => {
-    if (Object(__WEBPACK_IMPORTED_MODULE_2__reducers__["b" /* getIsFetching */])(getState(), filter)) {
+    if (Object(__WEBPACK_IMPORTED_MODULE_2__reducers__["c" /* getIsFetching */])(getState(), filter)) {
         return Promise.resolve();
     }
-    dispatch(requestTodos(filter));
+    dispatch({ type: 'FETCH_TODOS_REQUEST',
+        filter
+    });
 
     return __WEBPACK_IMPORTED_MODULE_1__api__["a" /* fetchTodos */](filter).then(response => {
-        dispatch(receiveTodos(filter, response));
+        dispatch({
+            type: 'FETCH_TODOS_SUCCESS',
+            filter,
+            response
+        });
+    }, error => {
+        dispatch({
+            type: 'FETCH_TODOS_FAILURE',
+            filter,
+            message: error.message || 'Something went wrong.'
+        });
     });
 };
 /* harmony export (immutable) */ __webpack_exports__["fetchTodos"] = fetchTodos;
@@ -49135,7 +49151,7 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 const byId = (state = {}, action) => {
     switch (action.type) {
-        case 'RECEIVE_TODOS':
+        case 'FETCH_TODOS_SUCCESS':
             const nextState = _extends({}, state);
             action.response.forEach(todo => {
                 nextState[todo.id] = todo;
@@ -49165,7 +49181,7 @@ const createList = filter => {
             return state;
         }
         switch (action.type) {
-            case 'RECEIVE_TODOS':
+            case 'FETCH_TODOS_SUCCESS':
                 return action.response.map(todo => todo.id);
             default:
                 return state;
@@ -49176,27 +49192,46 @@ const createList = filter => {
             return state;
         }
         switch (action.type) {
-            case 'REQUEST_TODOS':
+            case 'FETCH_TODOS_REQUEST':
                 return true;
-            case 'RECEIVE_TODOS':
+            case 'FETCH_TODOS_SUCCESS':
+            case 'FETCH_TODOS_FAILURE':
                 return false;
+            default:
+                return state;
+        }
+    };
+    const errorMessage = (state = null, action) => {
+        if (filter !== action.filter) {
+            return state;
+        }
+        switch (action.type) {
+            case 'FETCH_TODOS_FAILURE':
+                return action.message;
+            case 'FETCH_TODOS_REQUEST':
+            case 'FETCH_TODOS_SUCCESS':
+                return null;
             default:
                 return state;
         }
     };
     return Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* combineReducers */])({
         ids,
-        isFetching
+        isFetching,
+        errorMessage
     });
 };
 
 /* harmony default export */ __webpack_exports__["a"] = (createList);
 
 const getIds = state => state.ids;
-/* harmony export (immutable) */ __webpack_exports__["b"] = getIds;
+/* harmony export (immutable) */ __webpack_exports__["c"] = getIds;
 
 const getIsFetching = state => state.isFetching;
-/* harmony export (immutable) */ __webpack_exports__["c"] = getIsFetching;
+/* harmony export (immutable) */ __webpack_exports__["d"] = getIsFetching;
+
+const getErrorMessage = state => state.errorMessage;
+/* harmony export (immutable) */ __webpack_exports__["b"] = getErrorMessage;
 
 
 /***/ }),
@@ -49227,6 +49262,33 @@ var thunk = createThunkMiddleware();
 thunk.withExtraArgument = createThunkMiddleware;
 
 exports['default'] = thunk;
+
+/***/ }),
+/* 636 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+
+
+const FetchError = ({ message, onRetry }) => __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+    'div',
+    null,
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'p',
+        null,
+        'Could not fetch todos. ',
+        message
+    ),
+    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+        'button',
+        { onClick: onRetry },
+        'Retry'
+    )
+);
+
+/* harmony default export */ __webpack_exports__["a"] = (FetchError);
 
 /***/ })
 /******/ ]);
